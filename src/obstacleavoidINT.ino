@@ -1,7 +1,7 @@
 #include <PinChangeInt.h>
 //Obstacle switches are connected to these pins on the Arduino with pull DOWN resistors
-const int leftObstacle = 1;
-const int rightObstacle = 2;
+const int leftObstacle = A1;
+const int rightObstacle = A0;
 const int leftEdge = 6;
 const int rightEdge = 7;
 
@@ -39,16 +39,21 @@ void setup(){
         pinMode(PWMB, OUTPUT);
         pinMode(BIN1, OUTPUT);
         pinMode(BIN2, OUTPUT);
-
+        // Per library documentation. Attach interrupts to all switches,
+        // call a single ISR that will set flags
         PCintPort::attachInterrupt(leftObstacle, &obstacle, RISING);
         PCintPort::attachInterrupt(rightObstacle, &obstacle, RISING);
         PCintPort::attachInterrupt(leftEdge, &obstacle, FALLING);
         PCintPort::attachInterrupt(rightEdge, &obstacle, FALLING);
+       Serial.begin(9600);
 }
 
 int turnLeftFlag = 0;
 int turnRightFlag = 0;
 
+// obstacle() is called any time a switch is actuated. The function polls
+// all of the input switches, and sets an appropriate 'turn' flag.
+// this turn flag is used in loop() to back up and turn in the correct direction
 void obstacle() {
         turnLeftFlag = 0;
         turnRightFlag = 0;
@@ -59,9 +64,11 @@ void obstacle() {
         if(obstaclePin == rightObstacle || obstaclePin == rightEdge) {
                 turnLeftFlag = 1; 
         }
+        Serial.println(obstaclePin);
 }
 
 void loop() {
+        // Check if a flag has been set - if so, turn. If not, drive forward
         if(turnLeftFlag == 1){
                 turnLeft();
         }
