@@ -11,5 +11,5 @@ Current status
 ==========
 
 * Robots capable of very basic object avoidance 
-..* Forward obstacle detection as well as edge detection.
+* Forward obstacle detection as well as edge detection.
 * Current behavior is to reverse and rotate on obstacle detection
